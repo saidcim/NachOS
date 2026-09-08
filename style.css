@@ -1,0 +1,59 @@
+:root{
+  --masa:#E9D9AC;
+  --masa-hi:#FBF1D2;
+  --masa-lo:#94805A;
+  --char:#22190F;
+  --queso:#F5B32B;
+  --queso-lo:#BE8218;
+  --salsa:#BE3626;
+  --guac:#47632F;
+  --guac-dk:#354A22;
+  --jala:#7CB342;
+  --crema:#FFF8E7;
+  --panel-h:34px;
+  --font-display:'Bungee',system-ui,sans-serif;
+  --font-ui:'IBM Plex Mono',ui-monospace,monospace;
+  --font-pix:'Silkscreen',monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  font-family:var(--font-ui);
+  font-size:13px;
+  color:var(--char);
+  background:var(--guac-dk);
+  overflow:hidden;
+  -webkit-font-smoothing:none;
+}
+button{font:inherit;color:inherit;cursor:pointer}
+.bevel{border-style:solid;border-width:2px;border-color:var(--masa-hi) var(--masa-lo) var(--masa-lo) var(--masa-hi);background:var(--masa)}
+.bevel-in{border-style:solid;border-width:2px;border-color:var(--masa-lo) var(--masa-hi) var(--masa-hi) var(--masa-lo);background:var(--crema)}
+.btn{
+  background:var(--masa);
+  border-style:solid;border-width:2px;
+  border-color:var(--masa-hi) var(--masa-lo) var(--masa-lo) var(--masa-hi);
+  padding:3px 10px;
+  font-family:var(--font-ui);
+  font-size:12px;
+  color:var(--char);
+}
+.btn:active,.btn[aria-pressed="true"]{border-color:var(--masa-lo) var(--masa-hi) var(--masa-hi) var(--masa-lo);background:#DCCB9C}
+.btn:focus-visible,input:focus-visible{outline:2px dashed var(--char);outline-offset:1px}
+#desktop{
+  position:fixed;inset:0;
+  background:
+    repeating-linear-gradient(135deg,rgba(0,0,0,.10) 0 2px,transparent 2px 16px),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 3px,transparent 3px 26px),
+    var(--guac);
+}
+#panel{
+  position:absolute;top:0;left:0;right:0;height:var(--panel-h);
+  display:flex;align-items:center;gap:6px;padding:3px 6px;
+  z-index:500;
+}
+#startBtn{display:flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:12px;letter-spacing:.5px;padding:3px 12px}
+#startBtn .chip{font-size:14px;filter:saturate(1.2)}
+#tasks{display:flex;gap:4px;flex:1;overflow:hidden}
+#tasks .task{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;flex:0 1 auto}
+#tray{display:flex;align-items:center;gap:8px;padding:3px 10px;font-family:var(--font-pix);font-size:12px;letter-spacing:.5px}
+#tray .heat{letter-spacing:0}
