@@ -24,3 +24,145 @@ function clock(){
 
 setInterval(clock,1000);
 clock();
+
+const APPS={
+  recipe:{name:'The Recipe',emoji:'\u{1F4DC}',w:430,h:400,status:'serves 2, or 1 hungry hacker',build:buildRecipe}
+};
+
+function focusWin(w){
+  state.z++;
+  w.root.style.zIndex=state.z;
+  state.windows.forEach(x=>{x.root.classList.toggle('active',x===w);});
+  state.active=w;
+  updateTasks();
+}
+
+function updateTasks(){
+  const bar=document.getElementById('tasks');
+  bar.innerHTML='';
+  state.windows.forEach(w=>{
+    const b=el('button','btn task',APPS[w.app].emoji+' '+APPS[w.app].name);
+    b.setAttribute('aria-pressed',String(w===state.active&&!w.root.classList.contains('min')));
+    b.addEventListener('click',()=>{
+      if(w.root.classList.contains('min')){w.root.classList.remove('min');focusWin(w);}
+      else if(state.active===w){w.root.classList.add('min');state.active=null;updateTasks();}
+      else focusWin(w);
+    });
+    bar.appendChild(b);
+  });
+}
+
+function openApp(id){
+  const spec=APPS[id];
+  if(!spec)return null;
+  for(const w of state.windows.values()){
+    if(w.app===id){w.root.classList.remove('min');focusWin(w);return w;}
+  }
+  state.count++;
+  const root=el('div','win bevel');
+  const offset=(state.count%7)*24;
+  const maxW=Math.min(spec.w,window.innerWidth-30);
+  const maxH=Math.min(spec.h,window.innerHeight-panelH-30);
+  root.style.width=maxW+'px';
+  root.style.height=maxH+'px';
+  root.style.left=Math.max(8,Math.min(120+offset,window.innerWidth-maxW-8))+'px';
+  root.style.top=Math.max(panelH+8,Math.min(panelH+18+offset,window.innerHeight-maxH-8))+'px';
+
+  const bar=el('div','titlebar');
+  bar.innerHTML='<span class="emoji">'+spec.emoji+'</span><span class="name">'+spec.name+'</span>';
+  const bMin=el('button','btn tb','_');
+  bMin.title='Minimize';
+  bMin.setAttribute('aria-label','Minimize '+spec.name);
+  const bMax=el('button','btn tb','▣');
+  bMax.title='Maximize';
+  bMax.setAttribute('aria-label','Maximize '+spec.name);
+  const bCls=el('button','btn tb close','✕');
+  bCls.title='Close';
+  bCls.setAttribute('aria-label','Close '+spec.name);
+  bar.append(bMin,bMax,bCls);
+
+  const body=el('div','body');
+  const status=el('div','statusbar','<span>'+spec.status+'</span>');
+  root.append(bar,body,status);
+  ['n','s','w','e','nw','ne','sw','se'].forEach(d=>{
+    const h=el('div','rz '+d);
+    h.dataset.dir=d;
+    root.appendChild(h);
+  });
+  desktop.appendChild(root);
+
+  const w={app:id,root:root,body:body,bar:bar,prev:null};
+  state.windows.set(root,w);
+
+  bCls.addEventListener('click',()=>{
+    state.windows.delete(root);
+    root.remove();
+    if(state.active===w)state.active=null;
+    updateTasks();
+  });
+  bMin.addEventListener('click',()=>{root.classList.add('min');state.active=null;updateTasks();});
+  bMax.addEventListener('click',()=>toggleMax(w));
+  bar.addEventListener('dblclick',e=>{if(e.target.closest('.tb'))return;toggleMax(w);});
+  root.addEventListener('pointerdown',()=>focusWin(w),true);
+  dragWin(w,bar);
+  spec.build(body,w);
+  focusWin(w);
+  return w;
+}
+
+function toggleMax(w){
+  if(w.prev){
+    Object.assign(w.root.style,w.prev);
+    w.prev=null;
+  }else{
+    w.prev={left:w.root.style.left,top:w.root.style.top,width:w.root.style.width,height:w.root.style.height};
+    Object.assign(w.root.style,{left:'0px',top:panelH+'px',width:window.innerWidth+'px',height:(window.innerHeight-panelH)+'px'});
+  }
+}
+
+function dragWin(w,handle){
+  handle.addEventListener('pointerdown',e=>{
+    if(e.target.closest('.tb'))return;
+    e.preventDefault();
+    handle.setPointerCapture(e.pointerId);
+    handle.style.cursor='grabbing';
+    state.dragging=w;
+    const r=w.root.getBoundingClientRect();
+    const dx=e.clientX-r.left,dy=e.clientY-r.top;
+    const move=ev=>{
+      if(w.prev){
+        w.prev=null;
+        w.root.style.width=Math.min(APPS[w.app].w,window.innerWidth-30)+'px';
+        w.root.style.height=Math.min(APPS[w.app].h,window.innerHeight-panelH-30)+'px';
+      }
+      const ww=w.root.offsetWidth;
+      let x=ev.clientX-dx,y=ev.clientY-dy;
+      x=Math.max(-ww+70,Math.min(x,window.innerWidth-70));
+      y=Math.max(panelH,Math.min(y,window.innerHeight-30));
+      w.root.style.left=x+'px';
+      w.root.style.top=y+'px';
+    };
+    const up=()=>{
+      handle.releasePointerCapture(e.pointerId);
+      handle.style.cursor='grab';
+      handle.removeEventListener('pointermove',move);
+      handle.removeEventListener('pointerup',up);
+      state.dragging=null;
+    };
+    handle.addEventListener('pointermove',move);
+    handle.addEventListener('pointerup',up);
+  });
+}
+
+function buildRecipe(body){
+  body.innerHTML='<div class="pad">'+
+    '<h2>Sheet-Pan Nachos</h2>'+
+    '<p>The only system requirement NachOS actually enforces.</p>'+
+    '<h3>You need</h3>'+
+    '<ul><li>1 bag tortilla chips, thick cut</li><li>200 g cheese, grated by hand</li><li>1 tin black beans, rinsed</li><li>2 jalape&ntilde;os, sliced thin</li><li>Guacamole, salsa, crema to finish</li></ul>'+
+    '<h3>You do</h3>'+
+    '<ol><li>Heat the oven to 200 &deg;C.</li><li>Spread chips in one shallow layer. Stacking is how you get a soggy centre.</li><li>Scatter beans and half the cheese, then repeat.</li><li>Bake 8 minutes, until the cheese pulls when you lift a chip.</li><li>Add the cold toppings after baking, never before.</li></ol>'+
+    '<h3>Notes</h3>'+
+    '<p>Pre-grated cheese carries anti-caking starch and melts badly. Grate your own and the whole tray improves.</p>'+
+    '</div>';
+}

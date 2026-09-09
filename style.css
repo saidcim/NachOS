@@ -57,3 +57,31 @@ button{font:inherit;color:inherit;cursor:pointer}
 #tasks .task{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;flex:0 1 auto}
 #tray{display:flex;align-items:center;gap:8px;padding:3px 10px;font-family:var(--font-pix);font-size:12px;letter-spacing:.5px}
 #tray .heat{letter-spacing:0}
+.win{
+  position:absolute;z-index:100;min-width:240px;min-height:150px;
+  display:flex;flex-direction:column;
+  box-shadow:4px 4px 0 rgba(0,0,0,.35);
+}
+.win.min{display:none}
+.titlebar{
+  height:26px;flex:0 0 26px;display:flex;align-items:center;gap:8px;padding:0 3px 0 7px;
+  background:var(--masa-lo);color:#F3E9CE;cursor:grab;user-select:none;
+}
+.win.active .titlebar{
+  color:var(--crema);
+  background:
+    repeating-linear-gradient(90deg,rgba(245,179,43,.28) 0 3px,transparent 3px 9px),
+    linear-gradient(180deg,#D24632,var(--salsa));
+}
+.titlebar .name{flex:1;font-family:var(--font-display);font-size:11px;letter-spacing:.6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.titlebar .emoji{font-size:13px}
+.tb{width:20px;height:18px;padding:0;display:grid;place-items:center;font-family:var(--font-pix);font-size:11px;line-height:1}
+.tb.close{background:var(--queso)}
+.body{flex:1;overflow:auto;background:var(--crema);border-style:solid;border-width:2px;border-color:var(--masa-lo) var(--masa-hi) var(--masa-hi) var(--masa-lo);margin:3px}
+.statusbar{flex:0 0 20px;display:flex;align-items:center;gap:6px;padding:0 8px;margin:0 3px 3px;font-family:var(--font-pix);font-size:10px;color:#5A4A2E;border-style:solid;border-width:2px;border-color:var(--masa-lo) var(--masa-hi) var(--masa-hi) var(--masa-lo)}
+.pad{padding:12px 14px}
+.pad h2{font-family:var(--font-display);font-size:14px;margin:0 0 4px;letter-spacing:.5px}
+.pad h3{font-family:var(--font-pix);font-size:11px;letter-spacing:1px;color:var(--salsa);margin:16px 0 6px;text-transform:uppercase}
+.pad p{margin:0 0 10px;line-height:1.6}
+.pad ol,.pad ul{margin:0 0 10px;padding-left:20px;line-height:1.7}
+.pad li::marker{color:var(--salsa)}
