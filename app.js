@@ -288,3 +288,218 @@ function buildCalc(body){
   });
   body.tabIndex=0;
 }
+
+APPS.terminal={name:'Nacho Terminal',emoji:'\u{1F5A5}️',w:520,h:330,status:'type help for the menu',build:buildTerminal};
+APPS.paint={name:'Tortilla Paint',emoji:'\u{1F3A8}',w:600,h:430,status:'one tortilla, endless toppings',build:buildPaint};
+
+LAUNCHERS.unshift('terminal','paint');
+DESK.unshift('terminal','paint');
+renderMenu();
+renderIcons();
+
+const INGREDIENTS=[
+  {id:'guac',name:'Guacamole',color:'#5C8A32',spread:1.25},
+  {id:'salsa',name:'Salsa',color:'#C0392B',spread:1.0},
+  {id:'tomato',name:'Tomato',color:'#E14B3B',spread:.7},
+  {id:'queso',name:'Queso',color:'#F0B429',spread:1.4},
+  {id:'crema',name:'Crema',color:'#FBF6E6',spread:.9},
+  {id:'jalapeno',name:'Jalapeño',color:'#6FA83C',spread:.6},
+  {id:'beans',name:'Black beans',color:'#3B2B22',spread:.6},
+  {id:'olive',name:'Olives',color:'#4A4438',spread:.5}
+];
+
+function buildPaint(body){
+  body.innerHTML='<div class="paint">'+
+    '<div class="tray">'+
+    '<div class="lab">TOPPINGS</div><div id="pIng"></div>'+
+    '<div class="lab">SPOON SIZE</div><input id="pSize" type="range" min="6" max="34" value="16" aria-label="Spoon size">'+
+    '<div class="lab">ACTIONS</div>'+
+    '<button class="btn" id="pServe">Serve it</button>'+
+    '<button class="btn" id="pClear">New tortilla</button>'+
+    '<div class="verdict" id="pVerdict"></div>'+
+    '</div>'+
+    '<div class="stage"><canvas id="pCanvas" width="360" height="360" aria-label="Tortilla canvas"></canvas></div>'+
+    '</div>';
+  const cvs=body.querySelector('#pCanvas');
+  const ctx=cvs.getContext('2d',{willReadFrequently:true});
+  const size=body.querySelector('#pSize');
+  const verdict=body.querySelector('#pVerdict');
+  const list=body.querySelector('#pIng');
+  let active=INGREDIENTS[0];
+  const R=168,CX=180,CY=180;
+
+  INGREDIENTS.forEach(ing=>{
+    const b=el('button','btn ing','<span class="sw" style="background:'+ing.color+'"></span>'+ing.name);
+    b.addEventListener('click',()=>{
+      active=ing;
+      list.querySelectorAll('.ing').forEach(x=>x.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');
+    });
+    if(ing===active)b.setAttribute('aria-pressed','true');
+    list.appendChild(b);
+  });
+
+  function tortilla(){
+    ctx.clearRect(0,0,360,360);
+    const g=ctx.createRadialGradient(CX-30,CY-40,20,CX,CY,R);
+    g.addColorStop(0,'#F3E0B4');
+    g.addColorStop(.75,'#E7CE96');
+    g.addColorStop(1,'#CDAF6E');
+    ctx.beginPath();
+    ctx.arc(CX,CY,R,0,Math.PI*2);
+    ctx.fillStyle=g;
+    ctx.fill();
+    ctx.lineWidth=5;
+    ctx.strokeStyle='#B8945A';
+    ctx.stroke();
+    for(let i=0;i<70;i++){
+      const a=Math.random()*Math.PI*2,d=Math.sqrt(Math.random())*(R-14);
+      ctx.beginPath();
+      ctx.arc(CX+Math.cos(a)*d,CY+Math.sin(a)*d,1+Math.random()*4,0,Math.PI*2);
+      ctx.fillStyle='rgba(150,110,58,'+(0.05+Math.random()*0.16)+')';
+      ctx.fill();
+    }
+    verdict.textContent='';
+  }
+  tortilla();
+
+  function blob(x,y){
+    const s=parseFloat(size.value)*active.spread;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(CX,CY,R-6,0,Math.PI*2);
+    ctx.clip();
+    for(let i=0;i<4;i++){
+      const ox=(Math.random()-.5)*s,oy=(Math.random()-.5)*s;
+      ctx.beginPath();
+      ctx.ellipse(x+ox,y+oy,s*(.4+Math.random()*.5),s*(.4+Math.random()*.5),Math.random()*Math.PI,0,Math.PI*2);
+      ctx.fillStyle=active.color;
+      ctx.globalAlpha=.6+Math.random()*.4;
+      ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    ctx.restore();
+  }
+
+  let painting=false;
+  const pos=e=>{
+    const r=cvs.getBoundingClientRect();
+    return[(e.clientX-r.left)*(cvs.width/r.width),(e.clientY-r.top)*(cvs.height/r.height)];
+  };
+  cvs.addEventListener('pointerdown',e=>{painting=true;cvs.setPointerCapture(e.pointerId);const[x,y]=pos(e);blob(x,y);});
+  cvs.addEventListener('pointermove',e=>{if(!painting)return;const[x,y]=pos(e);blob(x,y);});
+  cvs.addEventListener('pointerup',()=>{painting=false;});
+  cvs.addEventListener('pointerleave',()=>{painting=false;});
+
+  body.querySelector('#pClear').addEventListener('click',tortilla);
+  body.querySelector('#pServe').addEventListener('click',()=>{
+    const d=ctx.getImageData(0,0,360,360).data;
+    let topped=0,total=0;
+    for(let y=0;y<360;y+=4){
+      for(let x=0;x<360;x+=4){
+        const dx=x-CX,dy=y-CY;
+        if(dx*dx+dy*dy>(R-8)*(R-8))continue;
+        total++;
+        const i=(y*360+x)*4;
+        const r=d[i],g=d[i+1],b=d[i+2];
+        if(!(r>190&&g>150&&b>90&&Math.abs(r-g)<70&&b<r))topped++;
+      }
+    }
+    const pct=Math.round(topped/total*100);
+    const line=pct<8?'Bare masa. Even the plate looks disappointed.'
+      :pct<30?'Restrained. The chef calls this "elegant", the table calls it "where is the rest".'
+      :pct<62?'Balanced. Every bite gets something.'
+      :pct<88?'Generous. You will need a fork and a napkin.'
+      :'Structurally unsound and completely correct.';
+    verdict.textContent=pct+'% covered. '+line;
+  });
+}
+
+const FORTUNES=[
+  'The chip at the bottom of the bowl was the best one. It always is.',
+  'Do not stack the chips. Ever.',
+  'Guacamole browns because you left it alone. So does a good idea.',
+  'A jalapeño has no opinion about your tolerance.',
+  'Cheese first, then heat, then everything cold.'
+];
+
+function buildTerminal(body){
+  body.innerHTML='<div class="term"><div class="out" id="tOut"></div><div class="line"><span class="ps">chef@nachos:~$</span><input id="tIn" autocomplete="off" spellcheck="false" aria-label="Terminal input"></div></div>';
+  const out=body.querySelector('#tOut');
+  const input=body.querySelector('#tIn');
+  const history=[];
+  let hi=0;
+
+  function write(text,cls){
+    const n=el('div',cls||'');
+    n.textContent=text;
+    out.appendChild(n);
+    out.scrollTop=out.scrollHeight;
+  }
+
+  write('NachOS shell, build Crunchy Layer.','h');
+  write('Type help to see what this thing does.\n');
+
+  const COMMANDS={
+    help(){
+      write('Commands:','h');
+      write([
+        '  help            this list',
+        '  ls              show the pantry',
+        '  open <app>      launch terminal, paint, calc, recipe, about',
+        '  cheese          check the melt',
+        '  fortune         one line of chip wisdom',
+        '  echo <text>     say it back',
+        '  date            what time is it',
+        '  whoami          identity crisis, resolved',
+        '  clear           wipe the screen'
+      ].join('\n'));
+    },
+    ls(){write('chips/  cheese/  guacamole/  salsa/  jalapenos/  regrets.log');},
+    open(args){
+      const key=(args[0]||'').toLowerCase();
+      if(APPS[key]){openApp(key);write('Opening '+APPS[key].name+'.');}
+      else write('No app called "'+(args[0]||'')+'". Try: '+Object.keys(APPS).join(', '),'e');
+    },
+    cheese(){
+      const pct=60+Math.floor(Math.random()*41);
+      const bars=Math.round(pct/5);
+      write('['+'#'.repeat(bars)+'-'.repeat(20-bars)+'] '+pct+'% melted','h');
+      write(pct>92?'Peak pull. Serve now.':'Give it another minute.');
+    },
+    fortune(){write(FORTUNES[Math.floor(Math.random()*FORTUNES.length)]);},
+    echo(args){write(args.join(' '));},
+    date(){write(new Date().toString());},
+    whoami(){write('chef. You are always the chef here.');},
+    clear(){out.innerHTML='';},
+    sudo(args){
+      if(args.join(' ').includes('make me a sandwich'))write('No. This is a nacho establishment.','e');
+      else write('chef is not in the sudoers file. This incident has been sprinkled with paprika.','e');
+    }
+  };
+
+  function run(raw){
+    const line=raw.trim();
+    write('chef@nachos:~$ '+line,'u');
+    if(!line)return;
+    history.push(line);
+    hi=history.length;
+    const parts=line.split(/\s+/);
+    const cmd=parts[0].toLowerCase();
+    const args=parts.slice(1);
+    if(COMMANDS[cmd])COMMANDS[cmd](args);
+    else write('nsh: '+cmd+': command not found. Try help.','e');
+  }
+
+  input.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){run(input.value);input.value='';}
+    else if(e.key==='ArrowUp'){if(hi>0){hi--;input.value=history[hi]||'';}e.preventDefault();}
+    else if(e.key==='ArrowDown'){
+      if(hi<history.length-1){hi++;input.value=history[hi]||'';}
+      else{hi=history.length;input.value='';}
+      e.preventDefault();
+    }
+  });
+  body.addEventListener('pointerup',()=>{if(!window.getSelection().toString())input.focus();});
+  setTimeout(()=>input.focus(),60);
+}
