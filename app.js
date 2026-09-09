@@ -503,3 +503,135 @@ function buildTerminal(body){
   body.addEventListener('pointerup',()=>{if(!window.getSelection().toString())input.focus();});
   setTimeout(()=>input.focus(),60);
 }
+
+const boot=el('div','','<div class="mark">Nach<span>OS</span></div><div class="bar"><i id="bootBar"></i></div><div class="sub" id="bootMsg">warming the oven</div>');
+boot.id='boot';
+boot.setAttribute('role','status');
+boot.setAttribute('aria-live','polite');
+document.body.appendChild(boot);
+
+const ghost=el('div');
+ghost.id='snap';
+desktop.appendChild(ghost);
+
+const toasts=el('div');
+toasts.id='toasts';
+toasts.setAttribute('aria-live','polite');
+desktop.appendChild(toasts);
+
+function toast(title,text,ms){
+  const t=el('div','toast bevel','<b>'+title+'</b>'+text);
+  toasts.appendChild(t);
+  setTimeout(()=>t.remove(),ms||5200);
+}
+
+function snapRect(zone){
+  const W=window.innerWidth,H=window.innerHeight-panelH;
+  if(zone==='left')return{left:0,top:panelH,width:Math.round(W/2),height:H};
+  if(zone==='right')return{left:Math.round(W/2),top:panelH,width:Math.round(W/2),height:H};
+  if(zone==='top')return{left:0,top:panelH,width:W,height:H};
+  return null;
+}
+
+function applyRect(w,rect){
+  w.prev={left:w.root.style.left,top:w.root.style.top,width:w.root.style.width,height:w.root.style.height};
+  Object.assign(w.root.style,{left:rect.left+'px',top:rect.top+'px',width:rect.width+'px',height:rect.height+'px'});
+}
+
+let snapTarget=null,snapZone=null;
+
+document.addEventListener('pointermove',e=>{
+  if(!state.dragging){
+    if(snapZone){snapZone=null;ghost.classList.remove('on');}
+    return;
+  }
+  snapTarget=state.dragging;
+  snapZone=e.clientX<=6?'left':e.clientX>=window.innerWidth-6?'right':e.clientY<=panelH+6?'top':null;
+  const rect=snapRect(snapZone);
+  if(rect){
+    ghost.classList.add('on');
+    Object.assign(ghost.style,{left:rect.left+'px',top:rect.top+'px',width:rect.width+'px',height:rect.height+'px'});
+  }else ghost.classList.remove('on');
+});
+
+document.addEventListener('pointerup',()=>{
+  const rect=snapRect(snapZone);
+  if(rect&&snapTarget)applyRect(snapTarget,rect);
+  snapZone=null;
+  snapTarget=null;
+  ghost.classList.remove('on');
+});
+
+desktop.addEventListener('pointerdown',e=>{
+  const h=e.target.closest('.rz');
+  if(!h)return;
+  const w=state.windows.get(h.closest('.win'));
+  if(!w)return;
+  e.preventDefault();
+  e.stopPropagation();
+  h.setPointerCapture(e.pointerId);
+  w.prev=null;
+  const dir=h.dataset.dir;
+  const r=w.root.getBoundingClientRect();
+  const sx=e.clientX,sy=e.clientY;
+  const move=ev=>{
+    const ddx=ev.clientX-sx,ddy=ev.clientY-sy;
+    let L=r.left,T=r.top,W=r.width,H=r.height;
+    if(dir.includes('e'))W=r.width+ddx;
+    if(dir.includes('s'))H=r.height+ddy;
+    if(dir.includes('w')){W=r.width-ddx;L=r.left+ddx;}
+    if(dir.includes('n')){H=r.height-ddy;T=r.top+ddy;}
+    W=Math.max(240,W);
+    H=Math.max(150,H);
+    T=Math.max(panelH,T);
+    w.root.style.width=W+'px';
+    w.root.style.height=H+'px';
+    w.root.style.left=L+'px';
+    w.root.style.top=T+'px';
+  };
+  const up=()=>{
+    h.releasePointerCapture(e.pointerId);
+    h.removeEventListener('pointermove',move);
+    h.removeEventListener('pointerup',up);
+  };
+  h.addEventListener('pointermove',move);
+  h.addEventListener('pointerup',up);
+});
+
+const heat=document.getElementById('heat');
+setInterval(()=>{
+  const n=1+Math.floor(Math.random()*4);
+  heat.textContent='�️'.repeat(n);
+  heat.title='Spice level '+n+' of 4';
+},9000);
+
+const bootBar=document.getElementById('bootBar');
+const bootMsg=document.getElementById('bootMsg');
+const STEPS=['warming the oven','grating cheese','mounting /pantry','checking guacamole freshness','plating'];
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function finishBoot(){
+  boot.style.display='none';
+  openApp('terminal');
+  setTimeout(()=>toast('Kitchen note','Drag a window to a screen edge to snap it. Double-click a title bar to fill the screen.'),700);
+}
+
+if(reduce)finishBoot();
+else{
+  let p=0,s=0;
+  const timer=setInterval(()=>{
+    p+=8+Math.random()*14;
+    if(p>=100){p=100;clearInterval(timer);setTimeout(finishBoot,320);}
+    bootBar.style.width=p+'%';
+    const idx=Math.min(STEPS.length-1,Math.floor(p/100*STEPS.length));
+    if(idx!==s){s=idx;bootMsg.textContent=STEPS[idx];}
+  },170);
+}
+
+window.addEventListener('resize',()=>{
+  state.windows.forEach(w=>{
+    const r=w.root.getBoundingClientRect();
+    if(r.left>window.innerWidth-70)w.root.style.left=(window.innerWidth-120)+'px';
+    if(r.top>window.innerHeight-30)w.root.style.top=(window.innerHeight-120)+'px';
+  });
+});
