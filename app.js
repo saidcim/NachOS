@@ -166,3 +166,125 @@ function buildRecipe(body){
     '<p>Pre-grated cheese carries anti-caking starch and melts badly. Grate your own and the whole tray improves.</p>'+
     '</div>';
 }
+
+APPS.calc={name:'Queso Calc',emoji:'\u{1F9EE}',w:280,h:340,status:'math, but cheesier',build:buildCalc};
+APPS.about={name:'About NachOS',emoji:'ℹ️',w:400,h:330,status:'version 1.0',build:buildAbout};
+
+const LAUNCHERS=['recipe','calc','about'];
+const DESK=['recipe','calc'];
+
+const menu=el('nav','bevel','<div class="rail">NachOS 1.0</div><ul id="menuList"></ul>');
+menu.id='menu';
+menu.setAttribute('aria-label','Main menu');
+desktop.appendChild(menu);
+
+const icons=el('div');
+icons.id='icons';
+icons.setAttribute('role','group');
+icons.setAttribute('aria-label','Desktop');
+desktop.appendChild(icons);
+
+const startBtn=document.getElementById('startBtn');
+
+function openMenu(){menu.classList.add('open');startBtn.setAttribute('aria-expanded','true');}
+function closeMenu(){menu.classList.remove('open');startBtn.setAttribute('aria-expanded','false');}
+
+function renderMenu(){
+  const list=document.getElementById('menuList');
+  list.innerHTML='';
+  LAUNCHERS.forEach(id=>{
+    const li=el('li');
+    const b=el('button','','<span class="ico">'+APPS[id].emoji+'</span>'+APPS[id].name);
+    b.addEventListener('click',()=>{closeMenu();openApp(id);});
+    li.appendChild(b);
+    list.appendChild(li);
+  });
+}
+
+function renderIcons(){
+  icons.innerHTML='';
+  DESK.forEach(id=>{
+    const b=el('button','dicon','<span class="ico">'+APPS[id].emoji+'</span><span>'+APPS[id].name+'</span>');
+    b.addEventListener('dblclick',()=>openApp(id));
+    b.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();openApp(id);}
+    });
+    icons.appendChild(b);
+  });
+}
+
+startBtn.addEventListener('click',e=>{
+  e.stopPropagation();
+  menu.classList.contains('open')?closeMenu():openMenu();
+});
+document.addEventListener('click',e=>{if(!menu.contains(e.target)&&e.target!==startBtn)closeMenu();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu();});
+
+renderMenu();
+renderIcons();
+
+function buildAbout(body){
+  body.innerHTML='<div class="pad">'+
+    '<h2>NachOS 1.0</h2>'+
+    '<p>A desktop that runs entirely in one browser tab, held together by cheese and event listeners.</p>'+
+    '<dl class="kv">'+
+    '<dt>Build</dt><dd>Crunchy Layer</dd>'+
+    '<dt>Kernel</dt><dd>Corn, stone ground</dd>'+
+    '<dt>Storage</dt><dd>One sheet pan</dd>'+
+    '<dt>Shell</dt><dd>Nacho Terminal</dd>'+
+    '</dl>'+
+    '</div>';
+}
+
+function buildCalc(body){
+  body.innerHTML='<div class="calc">'+
+    '<div class="screen" id="cScreen">0</div>'+
+    '<div class="tape" id="cTape"></div>'+
+    '<div class="keys">'+
+    '<button class="btn clr" data-k="C">C</button><button class="btn clr" data-k="&plusmn;">&plusmn;</button><button class="btn clr" data-k="%">%</button><button class="btn op" data-k="/">&divide;</button>'+
+    '<button class="btn" data-k="7">7</button><button class="btn" data-k="8">8</button><button class="btn" data-k="9">9</button><button class="btn op" data-k="*">&times;</button>'+
+    '<button class="btn" data-k="4">4</button><button class="btn" data-k="5">5</button><button class="btn" data-k="6">6</button><button class="btn op" data-k="-">&minus;</button>'+
+    '<button class="btn" data-k="1">1</button><button class="btn" data-k="2">2</button><button class="btn" data-k="3">3</button><button class="btn op" data-k="+">+</button>'+
+    '<button class="btn" data-k="0" style="grid-column:span 2">0</button><button class="btn" data-k=".">.</button><button class="btn eq" data-k="=">=</button>'+
+    '</div></div>';
+  const screen=body.querySelector('#cScreen');
+  const tape=body.querySelector('#cTape');
+  let cur='0',acc=null,op=null,fresh=true;
+  const show=v=>{screen.textContent=String(v).slice(0,14);};
+  const apply=(a,b,o)=>o==='+'?a+b:o==='-'?a-b:o==='*'?a*b:b===0?'QUESO ERROR':a/b;
+  function press(k){
+    if(k==='C'){cur='0';acc=null;op=null;fresh=true;tape.textContent='';show(cur);return;}
+    if(k==='±'){cur=String(parseFloat(cur)*-1);show(cur);return;}
+    if(k==='%'){cur=String(parseFloat(cur)/100);show(cur);return;}
+    if('0123456789'.includes(k)){cur=fresh||cur==='0'?k:cur+k;fresh=false;show(cur);return;}
+    if(k==='.'){
+      if(fresh){cur='0.';fresh=false;}
+      else if(!cur.includes('.'))cur+='.';
+      show(cur);
+      return;
+    }
+    const val=parseFloat(cur);
+    if(k==='='){
+      if(op!==null&&acc!==null){
+        const r=apply(acc,val,op);
+        tape.textContent=acc+' '+op+' '+val+' =';
+        cur=String(r);acc=null;op=null;fresh=true;show(cur);
+      }
+      return;
+    }
+    if(op!==null&&acc!==null&&!fresh){
+      const r=apply(acc,val,op);
+      if(typeof r==='string'){show(r);acc=null;op=null;cur='0';fresh=true;return;}
+      acc=r;cur=String(r);show(cur);
+    }else acc=val;
+    op=k;fresh=true;
+    tape.textContent=acc+' '+k;
+  }
+  body.querySelectorAll('[data-k]').forEach(b=>b.addEventListener('click',()=>press(b.dataset.k)));
+  body.addEventListener('keydown',e=>{
+    const map={Enter:'=',Escape:'C',Backspace:'C',x:'*'};
+    const k=map[e.key]||e.key;
+    if(k.length===1&&'0123456789.+-*/=%C'.includes(k)){e.preventDefault();press(k);}
+  });
+  body.tabIndex=0;
+}

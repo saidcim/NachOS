@@ -85,3 +85,39 @@ button{font:inherit;color:inherit;cursor:pointer}
 .pad p{margin:0 0 10px;line-height:1.6}
 .pad ol,.pad ul{margin:0 0 10px;padding-left:20px;line-height:1.7}
 .pad li::marker{color:var(--salsa)}
+#menu{
+  position:absolute;top:calc(var(--panel-h) + 2px);left:6px;width:236px;z-index:600;
+  padding:4px;display:none;
+}
+#menu.open{display:block}
+#menu .rail{
+  position:absolute;left:4px;top:4px;bottom:4px;width:26px;
+  background:linear-gradient(180deg,var(--salsa),var(--queso-lo));
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  font-family:var(--font-display);font-size:13px;color:var(--crema);
+  display:flex;align-items:center;justify-content:center;letter-spacing:2px;
+}
+#menu ul{list-style:none;margin:0;padding:0 0 0 30px}
+#menu li button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:7px 8px;text-align:left;font-size:13px}
+#menu li button:hover,#menu li button:focus-visible{background:var(--salsa);color:var(--crema);outline:none}
+#menu .ico{font-size:16px;width:20px;text-align:center}
+#icons{position:absolute;top:calc(var(--panel-h) + 12px);left:12px;display:flex;flex-direction:column;gap:6px;z-index:10}
+.dicon{
+  width:84px;padding:8px 4px;border:2px dotted transparent;background:none;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  color:var(--crema);font-family:var(--font-pix);font-size:10px;line-height:1.35;text-align:center;
+  text-shadow:1px 1px 0 rgba(0,0,0,.6);
+}
+.dicon .ico{font-size:28px}
+.dicon:hover,.dicon:focus-visible{border-color:var(--crema);background:rgba(0,0,0,.18);outline:none}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;line-height:1.6}
+.kv dt{font-family:var(--font-pix);font-size:10px;letter-spacing:.5px;color:#5A4A2E;padding-top:2px}
+.kv dd{margin:0}
+.calc{display:flex;flex-direction:column;height:100%;padding:10px;gap:8px;background:var(--masa)}
+.calc .screen{padding:8px 10px;text-align:right;font-family:var(--font-display);font-size:22px;letter-spacing:1px;overflow:hidden;background:#2B2216;color:var(--queso);border-color:var(--masa-lo) var(--masa-hi) var(--masa-hi) var(--masa-lo);border-style:solid;border-width:2px}
+.calc .tape{font-family:var(--font-pix);font-size:10px;color:#6B5836;min-height:12px;text-align:right}
+.calc .keys{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.calc .keys button{font-family:var(--font-display);font-size:13px;padding:0}
+.calc .keys .op{background:var(--queso)}
+.calc .keys .eq{background:var(--salsa);color:var(--crema)}
+.calc .keys .clr{background:#D9C79A}
