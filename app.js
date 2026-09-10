@@ -13,7 +13,7 @@ const panel=el('div','bevel');
 panel.id='panel';
 panel.innerHTML='<button id="startBtn" class="btn" aria-haspopup="true" aria-expanded="false"><span class="chip">&#127790;</span>NACHOS</button>'+
   '<div id="tasks" role="group" aria-label="Open windows"></div>'+
-  '<div id="tray" class="bevel-in"><span class="heat" id="heat" title="Spice level">&#127798;&#127798;&#127798;</span><span id="clock">--:--:--</span></div>';
+  '<div id="tray" class="bevel-in"><span id="clock">--:--:--</span></div>';
 desktop.appendChild(panel);
 
 function clock(){
@@ -597,13 +597,6 @@ desktop.addEventListener('pointerdown',e=>{
   h.addEventListener('pointermove',move);
   h.addEventListener('pointerup',up);
 });
-
-const heat=document.getElementById('heat');
-setInterval(()=>{
-  const n=1+Math.floor(Math.random()*4);
-  heat.textContent='�️'.repeat(n);
-  heat.title='Spice level '+n+' of 4';
-},9000);
 
 const bootBar=document.getElementById('bootBar');
 const bootMsg=document.getElementById('bootMsg');

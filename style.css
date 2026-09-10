@@ -1,175 +1,731 @@
-:root{
-  --masa:#E9D9AC;
-  --masa-hi:#FBF1D2;
-  --masa-lo:#94805A;
-  --char:#22190F;
-  --queso:#F5B32B;
-  --queso-lo:#BE8218;
-  --salsa:#BE3626;
-  --guac:#47632F;
-  --guac-dk:#354A22;
-  --jala:#7CB342;
-  --crema:#FFF8E7;
-  --panel-h:34px;
-  --font-display:'Bungee',system-ui,sans-serif;
-  --font-ui:'IBM Plex Mono',ui-monospace,monospace;
-  --font-pix:'Silkscreen',monospace;
+/* NachOS style
+   made this myself, css is hard
+   TODO: clean this file up one day
+   TODO: pick better colors maybe */
+
+* {
+  box-sizing: border-box;
 }
-*{box-sizing:border-box}
-html,body{height:100%;margin:0}
-body{
-  font-family:var(--font-ui);
-  font-size:13px;
-  color:var(--char);
-  background:var(--guac-dk);
-  overflow:hidden;
-  -webkit-font-smoothing:none;
+
+html, body {
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
 }
-button{font:inherit;color:inherit;cursor:pointer}
-.bevel{border-style:solid;border-width:2px;border-color:var(--masa-hi) var(--masa-lo) var(--masa-lo) var(--masa-hi);background:var(--masa)}
-.bevel-in{border-style:solid;border-width:2px;border-color:var(--masa-lo) var(--masa-hi) var(--masa-hi) var(--masa-lo);background:var(--crema)}
-.btn{
-  background:var(--masa);
-  border-style:solid;border-width:2px;
-  border-color:var(--masa-hi) var(--masa-lo) var(--masa-lo) var(--masa-hi);
-  padding:3px 10px;
-  font-family:var(--font-ui);
-  font-size:12px;
-  color:var(--char);
+
+body {
+  font-family: "Comic Sans MS", Verdana, sans-serif;
+  font-size: 13px;
+  color: #000000;
+  background: #008080;
+  overflow: hidden;
 }
-.btn:active,.btn[aria-pressed="true"]{border-color:var(--masa-lo) var(--masa-hi) var(--masa-hi) var(--masa-lo);background:#DCCB9C}
-.btn:focus-visible,input:focus-visible{outline:2px dashed var(--char);outline-offset:1px}
-#desktop{
-  position:fixed;inset:0;
-  background:
-    repeating-linear-gradient(135deg,rgba(0,0,0,.10) 0 2px,transparent 2px 16px),
-    repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 3px,transparent 3px 26px),
-    var(--guac);
+
+button {
+  font-family: Verdana, sans-serif;
+  font-size: 12px;
+  color: #000000;
+  cursor: pointer;
 }
-#panel{
-  position:absolute;top:0;left:0;right:0;height:var(--panel-h);
-  display:flex;align-items:center;gap:6px;padding:3px 6px;
-  z-index:500;
+
+/* a reset i copied from somewhere, not sure if needed
+a { text-decoration: none; }
+img { max-width: 100%; }
+*/
+
+
+/* ---------- shared box look ---------- */
+
+.bevel {
+  background: #C0C0C0;
+  border: 2px solid #000000;
 }
-#startBtn{display:flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:12px;letter-spacing:.5px;padding:3px 12px}
-#startBtn .chip{font-size:14px;filter:saturate(1.2)}
-#tasks{display:flex;gap:4px;flex:1;overflow:hidden}
-#tasks .task{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;flex:0 1 auto}
-#tray{display:flex;align-items:center;gap:8px;padding:3px 10px;font-family:var(--font-pix);font-size:12px;letter-spacing:.5px}
-#tray .heat{letter-spacing:0}
-.win{
-  position:absolute;z-index:100;min-width:240px;min-height:150px;
-  display:flex;flex-direction:column;
-  box-shadow:4px 4px 0 rgba(0,0,0,.35);
+
+.bevel-in {
+  background: #ffffff;
+  border: 2px solid #808080;
 }
-.win.min{display:none}
-.titlebar{
-  height:26px;flex:0 0 26px;display:flex;align-items:center;gap:8px;padding:0 3px 0 7px;
-  background:var(--masa-lo);color:#F3E9CE;cursor:grab;user-select:none;
+
+.btn {
+  background: #C0C0C0;
+  border: 3px outset #C0C0C0;
+  padding: 2px 9px;
+  font-size: 12px;
 }
-.win.active .titlebar{
-  color:var(--crema);
-  background:
-    repeating-linear-gradient(90deg,rgba(245,179,43,.28) 0 3px,transparent 3px 9px),
-    linear-gradient(180deg,#D24632,var(--salsa));
+
+.btn:active {
+  border: 3px inset #C0C0C0;
+  background: #A0A0A0;
 }
-.titlebar .name{flex:1;font-family:var(--font-display);font-size:11px;letter-spacing:.6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.titlebar .emoji{font-size:13px}
-.tb{width:20px;height:18px;padding:0;display:grid;place-items:center;font-family:var(--font-pix);font-size:11px;line-height:1}
-.tb.close{background:var(--queso)}
-.body{flex:1;overflow:auto;background:var(--crema);border-style:solid;border-width:2px;border-color:var(--masa-lo) var(--masa-hi) var(--masa-hi) var(--masa-lo);margin:3px}
-.statusbar{flex:0 0 20px;display:flex;align-items:center;gap:6px;padding:0 8px;margin:0 3px 3px;font-family:var(--font-pix);font-size:10px;color:#5A4A2E;border-style:solid;border-width:2px;border-color:var(--masa-lo) var(--masa-hi) var(--masa-hi) var(--masa-lo)}
-.pad{padding:12px 14px}
-.pad h2{font-family:var(--font-display);font-size:14px;margin:0 0 4px;letter-spacing:.5px}
-.pad h3{font-family:var(--font-pix);font-size:11px;letter-spacing:1px;color:var(--salsa);margin:16px 0 6px;text-transform:uppercase}
-.pad p{margin:0 0 10px;line-height:1.6}
-.pad ol,.pad ul{margin:0 0 10px;padding-left:20px;line-height:1.7}
-.pad li::marker{color:var(--salsa)}
-#menu{
-  position:absolute;top:calc(var(--panel-h) + 2px);left:6px;width:236px;z-index:600;
-  padding:4px;display:none;
+
+.btn[aria-pressed="true"] {
+  border: 3px inset #C0C0C0;
+  background: #A0A0A0;
 }
-#menu.open{display:block}
-#menu .rail{
-  position:absolute;left:4px;top:4px;bottom:4px;width:26px;
-  background:linear-gradient(180deg,var(--salsa),var(--queso-lo));
-  writing-mode:vertical-rl;transform:rotate(180deg);
-  font-family:var(--font-display);font-size:13px;color:var(--crema);
-  display:flex;align-items:center;justify-content:center;letter-spacing:2px;
+
+.btn:focus-visible,
+input:focus-visible {
+  outline: 2px dashed #000000;
 }
-#menu ul{list-style:none;margin:0;padding:0 0 0 30px}
-#menu li button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:7px 8px;text-align:left;font-size:13px}
-#menu li button:hover,#menu li button:focus-visible{background:var(--salsa);color:var(--crema);outline:none}
-#menu .ico{font-size:16px;width:20px;text-align:center}
-#icons{position:absolute;top:calc(var(--panel-h) + 12px);left:12px;display:flex;flex-direction:column;gap:6px;z-index:10}
-.dicon{
-  width:84px;padding:8px 4px;border:2px dotted transparent;background:none;
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  color:var(--crema);font-family:var(--font-pix);font-size:10px;line-height:1.35;text-align:center;
-  text-shadow:1px 1px 0 rgba(0,0,0,.6);
+
+
+/* ---------- desktop ---------- */
+
+#desktop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #008080;
 }
-.dicon .ico{font-size:28px}
-.dicon:hover,.dicon:focus-visible{border-color:var(--crema);background:rgba(0,0,0,.18);outline:none}
-.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;line-height:1.6}
-.kv dt{font-family:var(--font-pix);font-size:10px;letter-spacing:.5px;color:#5A4A2E;padding-top:2px}
-.kv dd{margin:0}
-.calc{display:flex;flex-direction:column;height:100%;padding:10px;gap:8px;background:var(--masa)}
-.calc .screen{padding:8px 10px;text-align:right;font-family:var(--font-display);font-size:22px;letter-spacing:1px;overflow:hidden;background:#2B2216;color:var(--queso);border-color:var(--masa-lo) var(--masa-hi) var(--masa-hi) var(--masa-lo);border-style:solid;border-width:2px}
-.calc .tape{font-family:var(--font-pix);font-size:10px;color:#6B5836;min-height:12px;text-align:right}
-.calc .keys{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.calc .keys button{font-family:var(--font-display);font-size:13px;padding:0}
-.calc .keys .op{background:var(--queso)}
-.calc .keys .eq{background:var(--salsa);color:var(--crema)}
-.calc .keys .clr{background:#D9C79A}
-.term{height:100%;display:flex;flex-direction:column;background:#160F09;color:#F0DFA8;font-size:12.5px}
-.term .out{flex:1;overflow:auto;padding:10px 12px;white-space:pre-wrap;word-break:break-word;line-height:1.5}
-.term .out .u{color:var(--jala)}
-.term .out .e{color:#E8705F}
-.term .out .h{color:var(--queso)}
-.term .line{display:flex;gap:8px;align-items:center;padding:6px 12px 10px}
-.term .ps{color:var(--jala);white-space:nowrap}
-.term input{flex:1;background:none;border:0;color:var(--crema);font:inherit;caret-color:var(--queso)}
-.term input:focus{outline:none}
-.paint{display:flex;height:100%;background:var(--masa)}
-.paint .tray{width:126px;flex:0 0 126px;padding:8px;display:flex;flex-direction:column;gap:5px;overflow:auto}
-.paint .tray .lab{font-family:var(--font-pix);font-size:9px;letter-spacing:.5px;color:#5A4A2E;margin:4px 0 1px}
-.paint .ing{display:flex;align-items:center;gap:7px;padding:4px 6px;font-size:11px;text-align:left;width:100%}
-.paint .ing .sw{width:14px;height:14px;flex:0 0 14px;border:2px solid var(--char)}
-.paint .stage{flex:1;display:grid;place-items:center;padding:10px;background:repeating-conic-gradient(#D9C79A 0% 25%,#CDBA8B 0% 50%) 0 0/18px 18px}
-.paint canvas{touch-action:none;cursor:crosshair;max-width:100%;max-height:100%;background:transparent;filter:drop-shadow(3px 4px 0 rgba(0,0,0,.28))}
-.paint input[type=range]{width:100%;accent-color:var(--salsa)}
-.paint .verdict{font-size:11px;line-height:1.4;min-height:26px;color:#4A3B22}
-#boot{
-  position:fixed;inset:0;z-index:9000;
-  background:var(--char);
-  color:var(--queso);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
-  font-family:var(--font-display);
+
+/* i tried a picture here first but it looked bad
+#desktop { background-image: url("tortilla.png"); background-size: cover; }
+*/
+
+
+/* ---------- top panel ---------- */
+
+#panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 34px;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 5px;
+  background: #C0C0C0;
+  border-bottom: 3px solid #000000;
 }
-#boot .mark{font-size:clamp(34px,9vw,72px);letter-spacing:2px;line-height:1}
-#boot .mark span{color:var(--salsa)}
-#boot .sub{font-family:var(--font-pix);font-size:12px;color:var(--crema);letter-spacing:1px}
-#boot .bar{width:min(320px,70vw);height:16px;background:#000;border:2px solid var(--queso-lo);padding:2px}
-#boot .bar i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,var(--queso) 0 8px,var(--queso-lo) 8px 12px)}
-.rz{position:absolute;z-index:2}
-.rz.n{top:-3px;left:8px;right:8px;height:7px;cursor:ns-resize}
-.rz.s{bottom:-3px;left:8px;right:8px;height:7px;cursor:ns-resize}
-.rz.w{left:-3px;top:8px;bottom:8px;width:7px;cursor:ew-resize}
-.rz.e{right:-3px;top:8px;bottom:8px;width:7px;cursor:ew-resize}
-.rz.nw{left:-3px;top:-3px;width:12px;height:12px;cursor:nwse-resize}
-.rz.ne{right:-3px;top:-3px;width:12px;height:12px;cursor:nesw-resize}
-.rz.sw{left:-3px;bottom:-3px;width:12px;height:12px;cursor:nesw-resize}
-.rz.se{right:-3px;bottom:-3px;width:12px;height:12px;cursor:nwse-resize}
-#snap{position:absolute;z-index:90;display:none;border:3px dashed var(--queso);background:rgba(245,179,43,.16);pointer-events:none}
-#snap.on{display:block}
-#toasts{position:absolute;right:10px;top:calc(var(--panel-h) + 10px);z-index:700;display:flex;flex-direction:column;gap:6px;width:230px}
-.toast{padding:8px 10px;font-size:12px;line-height:1.4;box-shadow:3px 3px 0 rgba(0,0,0,.3)}
-.toast b{display:block;font-family:var(--font-display);font-size:10px;letter-spacing:.5px;color:var(--salsa);margin-bottom:3px}
-@media (max-width:640px){
-  #icons{gap:2px}
-  .dicon{width:72px}
-  #tasks{display:none}
+
+#startBtn {
+  font-weight: bold;
+  font-family: "Comic Sans MS", Verdana, sans-serif;
+  background: #00FF00;
+  color: #FF0000;
+  padding: 2px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
-@media (prefers-reduced-motion:reduce){
-  #boot{display:none}
+
+#startBtn .chip {
+  font-size: 14px;
+}
+
+#tasks {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.task {
+    max-width: 170px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 0 1 auto;
+}
+
+#tray {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-family: "Courier New", monospace;
+  background: #FFFF99;
+  border: 2px solid #000000;
+}
+
+#clock {
+  font-size: 12px;
+}
+
+
+/* ---------- start menu ---------- */
+
+#menu {
+  position: absolute;
+  top: 36px;
+  left: 6px;
+  width: 210px;
+  z-index: 600;
+  padding: 4px;
+  display: none;
+}
+
+#menu.open {
+  display: block;
+}
+
+#menu .rail {
+  display: none;
+}
+
+#menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#menu li button {
+  width: 100%;
+  background: none;
+  border: 0;
+  border-bottom: 1px dotted #808080;
+  font-family: "Comic Sans MS", Verdana, sans-serif;
+  padding: 7px 8px;
+  text-align: left;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#menu li button:hover {
+  background: #000080;
+  color: #FFFF00;
+}
+
+#menu li button:focus-visible {
+  background: #000080;
+  color: #FFFF00;
+}
+
+#menu .ico {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+
+/* ---------- desktop icons ---------- */
+
+#icons {
+  position: absolute;
+  top: 46px;
+  left: 10px;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 90px 90px;
+  gap: 8px;
+}
+
+.dicon {
+  width: 90px;
+  padding: 8px 4px;
+  background: #C0C0C0;
+  border: 3px outset #C0C0C0;
+  color: #000000;
+  font-weight: bold;
+  font-size: 11px;
+  line-height: 1.3;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.dicon .ico {
+  font-size: 28px;
+}
+
+.dicon:hover {
+  background: #FFFF99;
+}
+
+.dicon:focus-visible {
+  background: #FFFF99;
+}
+
+/* .dicon.selected { background: blue; }  <- never used it */
+
+
+/* ---------- windows ---------- */
+
+.win {
+  position: absolute;
+  z-index: 100;
+  min-width: 240px;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  border: 3px solid #000000;
+  background: #C0C0C0;
+}
+
+.win.min {
+  display: none !important;
+}
+
+.titlebar {
+  height: 28px;
+  flex: 0 0 28px;
+  background: #808080;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 7px;
+  padding-right: 3px;
+  cursor: grab;
+  user-select: none;
+}
+
+.win.active .titlebar {
+  background: #800080;
+}
+
+.titlebar .name {
+  flex: 1;
+  font-weight: bold;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 2px #000000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.titlebar .emoji {
+  font-size: 13px;
+}
+
+.tb {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  font-size: 11px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tb.close {
+  background: #FF0000;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.body {
+  flex: 1;
+  overflow: auto;
+  background: #ffffff;
+  margin: 0px;
+  border-top: 2px solid #000000;
+}
+
+.statusbar {
+  flex: 0 0 22px;
+  padding: 0 8px;
+  font-size: 11px;
+  font-style: italic;
+  color: #000000;
+  background: #FFFF99;
+  border-top: 3px solid #000000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* resize handles. these took me way too long */
+.rz {
+  position: absolute;
+  z-index: 2;
+}
+.rz.n { top: -3px; left: 8px; right: 8px; height: 7px; cursor: ns-resize; }
+.rz.s { bottom: -3px; left: 8px; right: 8px; height: 7px; cursor: ns-resize; }
+.rz.w { left: -3px; top: 8px; bottom: 8px; width: 7px; cursor: ew-resize; }
+.rz.e { right: -3px; top: 8px; bottom: 8px; width: 7px; cursor: ew-resize; }
+.rz.nw { left: -3px; top: -3px; width: 12px; height: 12px; cursor: nwse-resize; }
+.rz.ne { right: -3px; top: -3px; width: 12px; height: 12px; cursor: nesw-resize; }
+.rz.sw { left: -3px; bottom: -3px; width: 12px; height: 12px; cursor: nesw-resize; }
+.rz.se { right: -3px; bottom: -3px; width: 12px; height: 12px; cursor: nwse-resize; }
+
+/* .rz:hover { background: red; }  turn this on when a handle stops working */
+
+#snap {
+  position: absolute;
+  z-index: 90;
+  display: none;
+  border: 4px dashed #FFFF00;
+  background: rgba(255,255,0,0.2);
+  pointer-events: none;
+}
+
+#snap.on {
+  display: block;
+}
+
+
+/* ---------- text pages (recipe, about) ---------- */
+
+.pad {
+  padding: 10px 12px;
+  font-family: "Times New Roman", serif;
+  font-size: 15px;
+}
+
+.pad h2 {
+  font-size: 20px;
+  text-align: center;
+  text-decoration: underline;
+  margin: 0;
+  margin-bottom: 8px;
+}
+
+.pad h3 {
+  font-size: 15px;
+  color: #FF0000;
+  text-decoration: underline;
+  margin-top: 14px;
+  margin-bottom: 5px;
+}
+
+.pad p {
+  margin: 0 0 10px 0;
+  line-height: 1.5;
+}
+
+.pad ul, .pad ol {
+  margin: 0 0 10px 0;
+  padding-left: 20px;
+  line-height: 1.6;
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  line-height: 1.5;
+}
+
+.kv dt {
+  font-weight: bold;
+  color: #0000FF;
+}
+
+.kv dd {
+  margin: 0;
+}
+
+
+/* ---------- calculator ---------- */
+
+.calc {
+  height: 100%;
+  padding: 8px;
+  background: #C0C0C0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calc .screen {
+  padding: 6px 8px;
+  text-align: right;
+  background: #99FF99;
+  color: #000000;
+  font-family: "Courier New", monospace;
+  font-size: 24px;
+  overflow: hidden;
+  border: 3px inset #C0C0C0;
+}
+
+.calc .tape {
+  min-height: 12px;
+  text-align: right;
+  font-size: 11px;
+  color: #666666;
+}
+
+.calc .keys {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.calc .keys button {
+  padding: 0;
+  font-size: 14px;
+}
+
+.calc .keys .op {
+  background: #FFCC00;
+}
+
+.calc .keys .clr {
+  background: #FF9999;
+}
+
+.calc .keys .eq {
+  background: #0000FF;
+  color: #FFFF00;
+  font-weight: bold;
+}
+
+/* the zero button is wide, that is done in the html with a style attribute
+   which is probably not great but it works */
+
+
+/* ---------- terminal ---------- */
+
+.term {
+  height: 100%;
+  background: #000000;
+  color: #00FF00;
+  font-family: monospace;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+}
+
+.term .out {
+  flex: 1;
+  overflow: auto;
+  padding: 10px 12px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.term .out .u { color: #FFFF00; }
+.term .out .e { color: #FF0000; }
+.term .out .h { color: #00FFFF; }
+
+.term .line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 10px 12px;
+}
+
+.term .ps {
+  color: #FFFF00;
+  white-space: nowrap;
+}
+
+.term input {
+  flex: 1;
+  background: none;
+  border: 0;
+  color: #00FF00;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.term input:focus {
+  outline: none;
+}
+
+/* blinking cursor attempt, gave up
+.term .cursor { animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+*/
+
+
+/* ---------- tortilla paint ---------- */
+
+.paint {
+  height: 100%;
+  background: #C0C0C0;
+  display: flex;
+}
+
+.paint .tray {
+  width: 126px;
+  flex: 0 0 126px;
+  padding: 8px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.paint .lab {
+  font-size: 11px;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #0000FF;
+  margin-top: 4px;
+  margin-bottom: 1px;
+}
+
+.ing {
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 11px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ing .sw {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  border: 1px solid #000000;
+}
+
+.paint .stage {
+  flex: 1;
+  padding: 10px;
+  background: #FFFFCC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paint canvas {
+  max-width: 100%;
+  max-height: 100%;
+  background: transparent;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.paint input[type=range] {
+  width: 100%;
+}
+
+.verdict {
+  min-height: 26px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: #FF0000;
+  font-weight: bold;
+}
+
+
+/* ---------- boot screen ---------- */
+
+#boot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9000;
+  background: #000080;
+  color: #FFFF00;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 14px;
+  padding-left: 60px;
+}
+
+#boot .mark {
+  font-size: 44px;
+  font-weight: bold;
+  font-family: "Comic Sans MS", Verdana, sans-serif;
+  text-shadow: 3px 3px 0 #FF0000;
+}
+
+#boot .mark span {
+  color: #00FF00;
+}
+
+#boot .sub {
+  font-size: 13px;
+  color: #ffffff;
+}
+
+#boot .bar {
+  width: 260px;
+  height: 12px;
+  background: #16213f;
+  border: 2px solid #ffffff;
+  padding: 2px;
+}
+
+#boot .bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #00FF00;
+}
+
+
+/* ---------- notifications ---------- */
+
+#toasts {
+  position: absolute;
+  top: 44px;
+  right: 10px;
+  width: 200px;
+  z-index: 700;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.toast {
+  padding: 7px 9px;
+  font-size: 12px;
+  line-height: 1.3;
+  background: #FFFF99;
+  border: 3px solid #FF0000;
+}
+
+.toast b {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 12px;
+  text-align: center;
+  text-decoration: underline;
+  color: #FF0000;
+}
+
+
+/* ---------- leftovers ---------- */
+
+/* used these in an earlier version of the panel, keeping just in case */
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.hidden {
+  display: none;
+}
+
+.center-text {
+  text-align: center;
+}
+
+.window-old {
+  border: 1px solid black;
+  background: white;
+}
+
+
+/* small screens. only really tested on my phone once */
+@media (max-width: 640px) {
+  #tasks {
+    display: none;
+  }
+  .dicon {
+    width: 72px;
+  }
+  #icons {
+    gap: 2px;
+  }
+  #boot .mark {
+    font-size: 30px;
+  }
 }
