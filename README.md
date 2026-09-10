@@ -1,37 +1,27 @@
-# NachOS
+# NachOS: You can tell what is it from its name.
+its an Windows 95 inspired web running operating system for stardance mission
+<img width="1280" height="640" alt="image" src="https://github.com/user-attachments/assets/4f945fba-c47e-4c1d-9f4d-5c055b2608fe" />
 
-A web based operating system made for the Hack Club Stardance mission. The name comes from nachos, so the whole thing is themed around cheese and tortilla chips.
 
-Demo link: (add your GitHub Pages link here)
+## Apps and features
+- There is a Queso Calc as calculator and About page for mor info about the project
+  
+### Tortilla Paint
+Spoo guacamole, salsa, queso and 5 other toppings onto a round tortilla. The Serve it button measures how much you covered and judges you for it.
+<img width="1280" height="781" alt="image" src="https://github.com/user-attachments/assets/5f984403-5e4e-49be-8623-fd9d4f038e44" />
 
-Built with plain HTML, CSS and JavaScript. No frameworks, no build step, no password.
 
-<!-- screenshot goes here -->
+### Nacho Terminal
+A working shell with commands like help, ls, open, cheese, fortune and sudo. Arrow keys go through your command history.
+<img width="1280" height="824" alt="image" src="https://github.com/user-attachments/assets/18f32a33-7319-4b8e-ab47-e2b42b302286" />
 
-## Features
+### The Recipe
+<img width="1008" height="710" alt="image" src="https://github.com/user-attachments/assets/8a167f27-bb80-44f3-8963-25ecc8670148" />
 
 - Draggable windows with close, minimize and maximize buttons
-- Resizable windows from all 8 edges
 - Snap a window to half or full screen by dragging it to a screen edge
-- Top panel with a clock and buttons for the open windows
-- Start menu and double clickable desktop icons
+- Top panel with a clock, open window buttons and a SPICE level indicator
 - Boot screen
-
-## Apps
-
-**Nacho Terminal:** A working shell with commands like help, ls, open, cheese, fortune and sudo. Arrow keys go through your command history.
-
-**Tortilla Paint:** Spoon guacamole, salsa, queso and 5 other toppings onto a round tortilla. The Serve it button measures how much you covered and judges you for it.
-
-**Queso Calc:** A calculator that works with both the mouse and the keyboard.
-
-**The Recipe:** An actual nacho recipe, in case you get hungry.
-
-**About NachOS:** System info, mostly lies.
-
-## Run it
-
-Clone the repo and open `index.html` in your browser. That is all, there is nothing to install.
 
 ## Files
 
